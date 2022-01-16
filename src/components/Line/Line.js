@@ -24,7 +24,7 @@ export default class Line extends React.Component {
   }
 
   componentDidMount() {
-    this.type("find land owners on the worldwide webb metaverse.");
+    this.type("find land owners in the worldwide webb metaverse.");
   }
 
   render() {

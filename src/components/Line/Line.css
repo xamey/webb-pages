@@ -3,6 +3,8 @@
     position: relative;
     caret-color: transparent;
     text-shadow: 0 0 3px #41FF00, 0 0 10px #00ff6659, 0 0 20px #41FF00, 0 0 30px #00ff66;
+    flex-grow: 2;
+    margin: 0 2em;
 }
 
 /* Puts a blinking square after the content as replacement for caret */

@@ -1,0 +1,7 @@
+.login-btn, .login-text {
+    flex-grow: 1;
+}
+
+.login-btn {
+    cursor: pointer;
+}
