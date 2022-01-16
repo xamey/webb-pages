@@ -1,0 +1,38 @@
+.search-bar {
+    margin: 2em 2em 0 2em;
+    display: flex;
+    background-color: black;
+    align-items: center;
+    
+}
+
+.search-bar-input {
+    margin: 0 auto;
+    width: 80%;
+    height: 1em;
+    padding: 1em;
+    background-color: black;
+    border-color: black;
+    color: white;
+    font-size: 1em;
+    font-family: Glass, serif;
+}
+
+.search-bar-input:focus{
+    outline: none;
+}
+
+.search-img {
+    max-height: 50px;
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+.invalid {
+    text-align: right;
+    padding: 0.5em;
+    margin-right: 4em;
+    color: red;
+    font-size: 0.5em;
+  }
+  

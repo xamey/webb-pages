@@ -1,0 +1,47 @@
+.header {
+    display: flex;
+    align-items: center;
+    padding: 2em;
+}
+
+.logo {
+    margin-right: 3em;
+}
+
+
+.scanline {
+	width: 100%;
+	height: 100px;
+	background: linear-gradient(
+		0deg,
+		rgba(0, 0, 0, 0) 0%,
+		rgba(255, 255, 255, 0.2) 10%,
+		rgba(0, 0, 0, 0.1) 100%
+	);
+	opacity: 0.1;
+	position: absolute;
+	bottom: 100%;
+	pointer-events: none;
+	animation: scanline 10s linear infinite;
+}
+
+#crt {
+	content: " ";
+	display: block;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: linear-gradient(
+		to bottom,
+		rgba(18, 16, 16, 0.1) 50%,
+		rgba(0, 0, 0, 0.25) 50%
+	);
+  background-image: radial-gradient(
+		ellipse,
+		var(--bg) 0%,
+		var(--off) 90%
+	);
+	background-size: 100% 4px;
+	animation: fadeIn 2s;
+}

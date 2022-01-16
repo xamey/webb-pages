@@ -1,0 +1,20 @@
+.result-line {
+    max-height: 5em;
+    display: flex;
+    align-items: center;
+    margin: 1em;
+}
+
+.result-img {
+    height: 100%;
+    width: 5em;
+}
+
+.result-text {
+    padding-left: 3em;
+}
+
+.os {
+    max-height: 1em;
+    margin-left: 0.5em;
+}
