@@ -53,3 +53,14 @@
       -webkit-filter: hue-rotate(360deg);
     }
   }
+
+  .filters {
+    text-align: right;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .filter {
+    margin: 1em;
+  }

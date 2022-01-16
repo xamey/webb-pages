@@ -28,6 +28,6 @@ export default class Line extends React.Component {
   }
 
   render() {
-    return <span className="headline">{this.sentence}</span>;
+    return <span className="headline purple-text">{this.sentence}</span>;
   }
 }

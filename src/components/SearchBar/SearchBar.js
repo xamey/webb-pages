@@ -1,18 +1,11 @@
 import React, { useContext, useState } from "react";
-import { getLandsByAddressOrEns } from "../../api/client";
-import { LoadingContext } from "../../hooks/LoadingProvider";
-import { ResultsContext } from "../../hooks/ResultsProvider";
 import { SearchContext } from "../../hooks/SearchProvider";
-import { SnackbarContext } from "../../hooks/SnackbarProvider";
 import "./SearchBar.css";
 
 export default function SearchBar() {
   const { search, setSearch } = useContext(SearchContext);
   const [isInvalid, setInvalidStatus] = useState(false);
   const [tempSearch, setTempSearch] = useState(search);
-  const { setResults } = useContext(ResultsContext);
-  const { setLoadingStatus } = useContext(LoadingContext);
-  const { openSnackBar } = useContext(SnackbarContext);
 
   function handleSubmit(e) {
     if (e.key === "Enter") {
@@ -47,16 +40,6 @@ export default function SearchBar() {
     }
     setInvalidStatus(false);
     setSearch(tempSearch);
-    setLoadingStatus(true);
-    await getLandsByAddressOrEns()
-      .then((res) => res.json())
-      .then((json) => {
-        setResults(json);
-        openSnackBar("OK")
-      })
-      .finally(() => {
-        setLoadingStatus(false);
-      });
   }
 
   return (

@@ -14,3 +14,11 @@
       bottom: 0%;
   }
 }
+
+.green-text {
+  text-shadow: 0 0 3px #41FF00, 0 0 10px #00ff6659, 0 0 20px #41FF00, 0 0 30px #00ff66;
+}
+
+.purple-text {
+  text-shadow: 0 0 3px #e74aed, 0 0 10px #e74aed, 0 0 20px #e74aed, 0 0 30px #e74aed;
+}

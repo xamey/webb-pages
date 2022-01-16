@@ -1,7 +1,15 @@
-.login-btn, .login-text {
-    flex-grow: 1;
+.login-btn, .action {
+    cursor: pointer;
 }
 
-.login-btn {
-    cursor: pointer;
+.connected {
+    display: flex;
+    flex-direction: column;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.5em;
+    justify-content: space-between;
 }
