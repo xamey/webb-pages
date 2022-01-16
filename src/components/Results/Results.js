@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
+  useMoralis,
   useMoralisWeb3Api,
   useMoralisWeb3ApiCall,
   useNFTBalances,
@@ -11,38 +12,33 @@ import "./Results.css";
 export default function Results() {
   const [results, setResults] = useState([]);
   const { search } = useContext(SearchContext);
+  const [ensDomain, setEnsDomain] = useState("");
+  const [ensAddress, setEnsAddress] = useState("");
+  const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
 
-  const { getNFTBalances, data, error, isLoading, isFetching } =
-    useNFTBalances();
-  // {
-  //   onSuccess: () => {
-  //     console.log("success");
-  //     // parseAndStoreResults(data?.result);
-  //   },
-  //   onComplete: () => {
-  //     console.log("complete");
-  //     // parseAndStoreResults(data?.result);
-  //   },
-  // }
+  const { getNFTBalances, data, isLoading, isFetching } = useNFTBalances();
 
-  // setResults(parsedResults(data?.result))
+  useEffect(() => {
+    if (ensAddress) {
+      getNFTBalances({ params: { address: ensAddress } });
+    }
+  }, [ensAddress, getNFTBalances]);
 
-  // const Web3Api = useMoralisWeb3Api();
-
-  // const { fetch, ensdata, enserror, ensisLoading } = useMoralisWeb3ApiCall(
-  //   Web3Api.resolve.resolveDomain,
-  //   {
-  //     domain: search,
-  //   }
-  // );
-  //
-  // useEffect(() => {
-  //   setSearch(ensdata?.address);
-  // }, [ensdata, setSearch]);
+  useEffect(() => {
+    if (ensDomain) {
+      web3.resolveName(ensDomain).then(function (address) {
+        setEnsAddress(address);
+      });
+    }
+  }, [ensDomain, web3]);
 
   useEffect(() => {
     if (search) {
-      getNFTBalances({ params: { address: search } });
+      if (search.endsWith(".eth")) {
+        setEnsDomain(search);
+      } else {
+        getNFTBalances({ params: { address: search } });
+      }
     }
     return () => {
       setResults([]);
@@ -54,6 +50,13 @@ export default function Results() {
       parseAndStoreResults(data.result);
     }
   }, [isLoading, isFetching, data]);
+
+  useEffect(() => {
+    if (!isWeb3Enabled) {
+      enableWeb3();
+    }
+  }, [isWeb3Enabled, enableWeb3]);
+
   const loading = () => {
     return <div className="pixel-loader"></div>;
   };
