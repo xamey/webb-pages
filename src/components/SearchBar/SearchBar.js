@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
+import { LoadingContext } from "../../hooks/LoadingProvider";
 import { SearchContext } from "../../hooks/SearchProvider";
 import "./SearchBar.css";
 
 export default function SearchBar() {
   const { search, setSearch } = useContext(SearchContext);
-  const { setSearchHandled } = useContext(SearchContext);
+  const { globalLoading, setGlobalLoading } = useContext(LoadingContext);
   const [isInvalid, setInvalidStatus] = useState(false);
   const [tempSearch, setTempSearch] = useState(search);
 
@@ -39,13 +40,14 @@ export default function SearchBar() {
   }
 
   async function launchSearch() {
+    if (globalLoading) return;
     if (isSearchInvalid()) {
       setInvalidStatus(true);
       return;
     }
 
     setInvalidStatus(false);
-    setSearchHandled(false);
+    setGlobalLoading(true);
     setSearch(tempSearch);
   }
 

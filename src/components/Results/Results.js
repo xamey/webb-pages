@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   useApiContract,
-  useMoralis,
   useMoralisWeb3Api,
   useMoralisWeb3ApiCall,
 } from "react-moralis";
+import { LoadingContext } from "../../hooks/LoadingProvider";
 import { SearchContext } from "../../hooks/SearchProvider";
 import { SnackbarContext } from "../../hooks/SnackbarProvider";
 import Result from "../Result/Result";
@@ -28,7 +28,7 @@ export default function Results() {
   /**
    * Contexts
    */
-  const { searchHandled, setSearchHandled } = useContext(SearchContext);
+  const { globalLoading, setGlobalLoading } = useContext(LoadingContext);
   const { search } = useContext(SearchContext);
   const { openSnackBar } = useContext(SnackbarContext);
 
@@ -87,7 +87,7 @@ export default function Results() {
     if (addressObject) {
       fetch();
     }
-  }, [addressObject, fetch, setSearchHandled]);
+  }, [addressObject, fetch]);
 
   useEffect(() => {
     if (errorResolver) {
@@ -154,9 +154,9 @@ export default function Results() {
   useEffect(() => {
     if (!(isLoading || isFetching) && data) {
       parseAndStoreResults(data.result);
-      setSearchHandled(true);
+      setGlobalLoading(false);
     }
-  }, [isLoading, isFetching, data, setSearchHandled]);
+  }, [isLoading, isFetching, data, setGlobalLoading]);
 
   /**
    * Hooks calls
@@ -243,5 +243,5 @@ export default function Results() {
     }
   };
 
-  return !searchHandled ? loading() : loaded();
+  return globalLoading ? loading() : loaded();
 }
