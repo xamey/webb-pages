@@ -64,7 +64,7 @@ export default function SearchBar() {
         <img
           className="search-img"
           onClick={launchSearch}
-          src={require("../../images/loop.png")}
+          src={require("../../images/loop.png")?.default}
           alt="search-img"
         />
       </div>

@@ -10,7 +10,7 @@ export default function Result(props) {
     <div className="result-line">
       <img
         className="result-img"
-        src={require(`../../images/${props.type}.png`)}
+        src={require(`../../images/${props.type}.png`)?.default}
         alt={props.type}
       />
       <div className="result-text">
@@ -23,7 +23,7 @@ export default function Result(props) {
       >
         <img
           className="os"
-          src={require("../../images/opensea-logo-b.png")}
+          src={require("../../images/opensea-logo-b.png")?.default}
           alt="logo"
         />
       </a>
