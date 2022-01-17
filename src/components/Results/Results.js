@@ -33,7 +33,7 @@ export default function Results() {
   useEffect(() => {
     if (ensDomain) {
       web3.resolveName(ensDomain).then(function (address) {
-        setAddressState({address: address});
+        setAddressState({ address: address });
       });
     }
   }, [ensDomain, web3]);
@@ -44,7 +44,7 @@ export default function Results() {
         setEnsDomain(search);
       } else {
         setEnsDomain(null);
-        setAddressState({address: search});
+        setAddressState({ address: search });
       }
     }
     return () => {
@@ -98,20 +98,20 @@ export default function Results() {
   }
 
   function sortResultsById() {
-    setResults(
-      results.sort(function (a, b) {
+    setResults([
+      ...results.sort(function (a, b) {
         return a.number - b.number;
-      })
-    );
+      }),
+    ]);
   }
 
   function sortResultsByType() {
     const types = { small: 0, medium: 1, large: 2, penthouse: 3 };
-    setResults(
-      results.sort(function (a, b) {
+    setResults([
+      ...results.sort(function (a, b) {
         return types[a.type] - types[b.type];
-      })
-    );
+      }),
+    ]);
   }
 
   const loaded = () => {
@@ -141,5 +141,5 @@ export default function Results() {
     }
   };
 
-  return isLoading || isFetching ? loading() : loaded();
+  return isLoading || isFetching || sortLoading ? loading() : loaded();
 }
