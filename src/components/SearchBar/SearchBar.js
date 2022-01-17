@@ -52,7 +52,6 @@ export default function SearchBar() {
       setInvalidStatus(true);
       return;
     }
-    debugger;
     if (!isWeb3Enabled && isEns()) {
       setShowConnectMessage(true);
     } else {
