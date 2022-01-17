@@ -49,6 +49,7 @@ export default function Results() {
     runContractFunction: runContractFunctionMain,
     data: dataMain,
     error: errorMain,
+    isFetching: isFetchingMain
   } = useApiContract({
     functionName: "resolver",
     abi: ensRegistryAbi,
@@ -110,7 +111,10 @@ export default function Results() {
     if (dataMain) {
       setResolverAddress(dataMain);
     }
-  }, [dataMain, setResolverAddress]);
+    /** We must set isFetchingMain as a dependency, because if the resolver address doesn't change between 2 calls
+     * this useEffet isn't triggered. isFetchingMain changes between 2 calls.
+     */
+  }, [dataMain, isFetchingMain, setResolverAddress]);
 
   useEffect(() => {
     if (errorMain) {
