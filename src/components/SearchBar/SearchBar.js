@@ -4,6 +4,7 @@ import "./SearchBar.css";
 
 export default function SearchBar() {
   const { search, setSearch } = useContext(SearchContext);
+  const { setSearchHandled } = useContext(SearchContext);
   const [isInvalid, setInvalidStatus] = useState(false);
   const [tempSearch, setTempSearch] = useState(search);
 
@@ -39,6 +40,7 @@ export default function SearchBar() {
       return;
     }
     setInvalidStatus(false);
+    setSearchHandled(false);
     setSearch(tempSearch);
   }
 

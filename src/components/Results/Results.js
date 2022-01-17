@@ -14,7 +14,7 @@ export default function Results() {
   const [ensDomain, setEnsDomain] = useState("");
   const [addressState, setAddressState] = useState("");
   const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
-
+  const { searchHandled, setSearchHandled } = useContext(SearchContext);
   const Web3Api = useMoralisWeb3Api();
   const { fetch, data, error, isLoading, isFetching } = useMoralisWeb3ApiCall(
     Web3Api.account.getNFTsForContract,
@@ -27,8 +27,10 @@ export default function Results() {
   useEffect(() => {
     if (addressState) {
       fetch();
+      setSearchHandled(true);
+
     }
-  }, [addressState, fetch]);
+  }, [addressState, fetch, setSearchHandled]);
 
   useEffect(() => {
     if (ensDomain) {
@@ -141,5 +143,5 @@ export default function Results() {
     }
   };
 
-  return isLoading || isFetching || sortLoading ? loading() : loaded();
+  return isLoading || isFetching || !searchHandled ? loading() : loaded();
 }
