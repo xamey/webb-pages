@@ -3,7 +3,6 @@ import {
   useMoralis,
   useMoralisWeb3Api,
   useMoralisWeb3ApiCall,
-  useNFTBalances,
 } from "react-moralis";
 import { SearchContext } from "../../hooks/SearchProvider";
 import Result from "../Result/Result";
@@ -13,21 +12,28 @@ export default function Results() {
   const [results, setResults] = useState([]);
   const { search } = useContext(SearchContext);
   const [ensDomain, setEnsDomain] = useState("");
-  const [ensAddress, setEnsAddress] = useState("");
+  const [addressState, setAddressState] = useState("");
   const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
 
-  const { getNFTBalances, data, isLoading, isFetching } = useNFTBalances();
+  const Web3Api = useMoralisWeb3Api();
+  const { fetch, data, error, isLoading, isFetching } = useMoralisWeb3ApiCall(
+    Web3Api.account.getNFTsForContract,
+    {
+      address: addressState.address,
+      token_address: "0xa1d4657e0e6507d5a94d06da93e94dc7c8c44b51",
+    }
+  );
 
   useEffect(() => {
-    if (ensAddress) {
-      getNFTBalances({ params: { address: ensAddress } });
+    if (addressState) {
+      fetch();
     }
-  }, [ensAddress, getNFTBalances]);
+  }, [addressState, fetch]);
 
   useEffect(() => {
     if (ensDomain) {
       web3.resolveName(ensDomain).then(function (address) {
-        setEnsAddress(address);
+        setAddressState({address: address});
       });
     }
   }, [ensDomain, web3]);
@@ -37,13 +43,14 @@ export default function Results() {
       if (search.endsWith(".eth")) {
         setEnsDomain(search);
       } else {
-        getNFTBalances({ params: { address: search } });
+        setEnsDomain(null);
+        setAddressState({address: search});
       }
     }
     return () => {
       setResults([]);
     };
-  }, [getNFTBalances, search]);
+  }, [search]);
 
   useEffect(() => {
     if (!(isLoading || isFetching) && data) {
@@ -77,12 +84,13 @@ export default function Results() {
 
   function parseAndStoreResults(data) {
     if (data == null) return;
-    const webbNfts = data.filter(
-      (e) => e.token_address === "0xa1d4657e0e6507d5a94d06da93e94dc7c8c44b51"
-    );
-    const nfts = webbNfts?.map((w) => {
+    const nfts = data?.map((w) => {
+      let metadata = w.metadata;
+      if (typeof metadata === "string") {
+        metadata = JSON.parse(metadata);
+      }
       return {
-        type: w.metadata.name.split(" ")[0].toLowerCase(),
+        type: metadata.name.split(" ")[0].toLowerCase(),
         number: w.token_id,
       };
     });
@@ -92,7 +100,7 @@ export default function Results() {
   function sortResultsById() {
     setResults(
       results.sort(function (a, b) {
-        return a.id - b.id;
+        return a.number - b.number;
       })
     );
   }
