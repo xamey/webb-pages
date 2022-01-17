@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
+  useApiContract,
   useMoralis,
   useMoralisWeb3Api,
   useMoralisWeb3ApiCall,
@@ -10,77 +11,147 @@ import Result from "../Result/Result";
 import "./Results.css";
 
 export default function Results() {
+  const ensRegistryAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+  const ensRegistryAbi = require("../../contracts/registry-abi.json");
+
+  const ensResolverAbi = require("../../contracts/resolver-abi.json");
+
   /**
    * Local state
    */
   const [results, setResults] = useState([]);
   const [ensDomain, setEnsDomain] = useState("");
-  const [addressState, setAddressState] = useState("");
-
+  const [addressObject, setAddressObject] = useState("");
+  const [hashedDomain, setHashedDomain] = useState("");
+  const [resolverAddress, setResolverAddress] = useState("");
   /**
    * Contexts
    */
   const { searchHandled, setSearchHandled } = useContext(SearchContext);
   const { search } = useContext(SearchContext);
-  const { setMessage } = useContext(SnackbarContext);
+  const { openSnackBar } = useContext(SnackbarContext);
 
   /**
    * Moralis calls
    */
-  const { web3, isWeb3Enabled } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
+
   const { fetch, data, error, isLoading, isFetching } = useMoralisWeb3ApiCall(
     Web3Api.account.getNFTsForContract,
     {
-      address: addressState.address,
+      address: addressObject.address,
       token_address: "0xa1d4657e0e6507d5a94d06da93e94dc7c8c44b51",
     }
   );
 
+  const {
+    runContractFunction: runContractFunctionMain,
+    data: dataMain,
+    error: errorMain,
+  } = useApiContract({
+    functionName: "resolver",
+    abi: ensRegistryAbi,
+    address: ensRegistryAddress,
+    params: { node: hashedDomain },
+  });
+
+  const {
+    runContractFunction: runContractFunctionResolver,
+    data: dataResolver,
+    error: errorResolver,
+  } = useApiContract({
+    functionName: "addr",
+    abi: ensResolverAbi,
+    address: resolverAddress,
+    params: { coinType: 60, node: hashedDomain },
+  });
+
+  const clearEnsInputs = () => {
+    setEnsDomain("");
+    setHashedDomain("");
+    setResolverAddress("");
+  }
   /**
    * hooks
    */
 
   useEffect(() => {
     if (error) {
-      setMessage(error.message);
+      openSnackBar(error.message);
     }
-  });
+  }, [openSnackBar, error]);
 
   useEffect(() => {
-    if (addressState) {
+    if (addressObject) {
       fetch();
-      setSearchHandled(true);
     }
-  }, [addressState, fetch, setSearchHandled]);
+  }, [addressObject, fetch, setSearchHandled]);
 
   useEffect(() => {
-    if (ensDomain && web3) {
-      web3.resolveName(ensDomain).then(function (address) {
-        setAddressState({ address: address });
-      });
+    if (errorResolver) {
+      openSnackBar(errorResolver);
     }
-  }, [ensDomain, web3]);
+  }, [errorResolver, openSnackBar]);
+
+  useEffect(() => {
+    if (dataResolver) {
+      setAddressObject({ address: dataResolver });
+    }
+  }, [dataResolver]);
+
+  useEffect(() => {
+    if (resolverAddress) {
+      runContractFunctionResolver();
+    }
+  }, [resolverAddress, runContractFunctionResolver, hashedDomain]);
+
+  useEffect(() => {
+    if (dataMain) {
+      setResolverAddress(dataMain);
+    }
+  }, [dataMain, setResolverAddress]);
+
+  useEffect(() => {
+    if (errorMain) {
+      openSnackBar(errorMain);
+    }
+  }, [openSnackBar, errorMain]);
+
+  useEffect(() => {
+    if (hashedDomain !== "") {
+      runContractFunctionMain();
+    }
+  }, [hashedDomain, runContractFunctionMain]);
+
+  useEffect(() => {
+    if (ensDomain) {
+      setHashedDomain(
+        "0x6590e7bfa149c296ac95ee7dccf50c2f99d1c9f71028df6acf1297a61b5772cb"
+      );
+    }
+  }, [ensDomain]);
 
   useEffect(() => {
     if (search) {
       if (search.endsWith(".eth")) {
+        clearEnsInputs();
         setEnsDomain(search);
       } else {
         setEnsDomain(null);
-        setAddressState({ address: search });
+        setAddressObject({ address: search });
       }
     }
     return () => {
       setResults([]);
     };
-  }, [search, isWeb3Enabled]);
+  }, [search]);
 
   useEffect(() => {
     if (!(isLoading || isFetching) && data) {
       parseAndStoreResults(data.result);
+      setSearchHandled(true);
     }
-  }, [isLoading, isFetching, data]);
+  }, [isLoading, isFetching, data, setSearchHandled]);
 
   /**
    * Hooks calls
@@ -167,5 +238,5 @@ export default function Results() {
     }
   };
 
-  return isLoading || isFetching || !searchHandled ? loading() : loaded();
+  return !searchHandled ? loading() : loaded();
 }
