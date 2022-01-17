@@ -11,9 +11,10 @@ import Result from "../Result/Result";
 import "./Results.css";
 
 export default function Results() {
+  const namehash = require('eth-ens-namehash')
+
   const ensRegistryAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   const ensRegistryAbi = require("../../contracts/registry-abi.json");
-
   const ensResolverAbi = require("../../contracts/resolver-abi.json");
 
   /**
@@ -126,10 +127,10 @@ export default function Results() {
   useEffect(() => {
     if (ensDomain) {
       setHashedDomain(
-        "0x6590e7bfa149c296ac95ee7dccf50c2f99d1c9f71028df6acf1297a61b5772cb"
+        namehash.hash(ensDomain)
       );
     }
-  }, [ensDomain]);
+  }, [ensDomain, namehash]);
 
   useEffect(() => {
     if (search) {
