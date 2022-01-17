@@ -82,12 +82,6 @@ export default function Results() {
     }
   }, [isLoading, isFetching, data]);
 
-  // useEffect(() => {
-  //   if (!isWeb3Enabled) {
-  //     enableWeb3();
-  //   }
-  // }, [isWeb3Enabled, enableWeb3]);
-
   /**
    * Hooks calls
    */

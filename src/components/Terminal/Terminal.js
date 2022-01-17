@@ -16,11 +16,6 @@ export default function Terminal() {
       <div className="scanline"></div>
       <div className="container">
         <div className="header">
-          <img
-            className="logo"
-            src={require("../../images/logo.png")}
-            alt="logo"
-          />
           <Line />
           <Login />
         </div>
