@@ -5,16 +5,29 @@ import {
   useMoralisWeb3ApiCall,
 } from "react-moralis";
 import { SearchContext } from "../../hooks/SearchProvider";
+import { SnackbarContext } from "../../hooks/SnackbarProvider";
 import Result from "../Result/Result";
 import "./Results.css";
 
 export default function Results() {
+  /**
+   * Local state
+   */
   const [results, setResults] = useState([]);
-  const { search } = useContext(SearchContext);
   const [ensDomain, setEnsDomain] = useState("");
   const [addressState, setAddressState] = useState("");
-  const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
+
+  /**
+   * Contexts
+   */
   const { searchHandled, setSearchHandled } = useContext(SearchContext);
+  const { search } = useContext(SearchContext);
+  const { setMessage } = useContext(SnackbarContext);
+
+  /**
+   * Moralis calls
+   */
+  const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
   const { fetch, data, error, isLoading, isFetching } = useMoralisWeb3ApiCall(
     Web3Api.account.getNFTsForContract,
@@ -24,11 +37,20 @@ export default function Results() {
     }
   );
 
+  /**
+   * hooks
+   */
+
+  useEffect(() => {
+    if (error) {
+      setMessage(error.message);
+    }
+  });
+
   useEffect(() => {
     if (addressState) {
       fetch();
       setSearchHandled(true);
-
     }
   }, [addressState, fetch, setSearchHandled]);
 
@@ -66,23 +88,9 @@ export default function Results() {
     }
   }, [isWeb3Enabled, enableWeb3]);
 
-  const loading = () => {
-    return <div className="pixel-loader"></div>;
-  };
-
-  const LinkToOwner = () => {
-    let link = "";
-    if (search.endsWith(".eth")) {
-      link = `https://etherscan.io/enslookup-search?search=${search}`;
-    } else {
-      link = `https://etherscan.io/address/${search}`;
-    }
-    return (
-      <a href={link} target="_blank" rel="noreferrer">
-        {search}
-      </a>
-    );
-  };
+  /**
+   * Hooks calls
+   */
 
   function parseAndStoreResults(data) {
     if (data == null) return;
@@ -115,6 +123,28 @@ export default function Results() {
       }),
     ]);
   }
+
+  /**
+   * Render functions
+   */
+
+  const loading = () => {
+    return <div className="pixel-loader"></div>;
+  };
+
+  const LinkToOwner = () => {
+    let link = "";
+    if (search.endsWith(".eth")) {
+      link = `https://etherscan.io/enslookup-search?search=${search}`;
+    } else {
+      link = `https://etherscan.io/address/${search}`;
+    }
+    return (
+      <a href={link} target="_blank" rel="noreferrer">
+        {search}
+      </a>
+    );
+  };
 
   const loaded = () => {
     if (search) {
