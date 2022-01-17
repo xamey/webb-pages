@@ -46,3 +46,16 @@
 	background-size: 100% 4px;
 	animation: fadeIn 2s;
 }
+
+.about {
+	font-size: 0.6rem;
+	position: fixed;
+	bottom: 1em;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+a:link, a:visited {
+	text-decoration-color: #e74aed;
+	color: #e74aed;
+}

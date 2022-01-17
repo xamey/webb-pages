@@ -22,7 +22,13 @@ export default function Terminal() {
         <SearchBar />
         <Results />
       </div>
-
+      <div className="about">
+        This project is not affiliated or endorsed by Worldwide Webb project.
+        Created by{" "}
+        <a href="https://twitter.com/xameyz" rel="noreferrer" target="_blank">
+          xameyz
+        </a>
+      </div>
       <Snackbar isActive={isActive} message={message} />
     </div>
   );
