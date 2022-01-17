@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useMoralis } from "react-moralis";
 import { SearchContext } from "../../hooks/SearchProvider";
 import "./SearchBar.css";
 
@@ -7,6 +8,8 @@ export default function SearchBar() {
   const { setSearchHandled } = useContext(SearchContext);
   const [isInvalid, setInvalidStatus] = useState(false);
   const [tempSearch, setTempSearch] = useState(search);
+  const [showConnectMessage, setShowConnectMessage] = useState(false);
+  const { isWeb3Enabled } = useMoralis();
 
   function handleSubmit(e) {
     if (e.key === "Enter") {
@@ -18,8 +21,12 @@ export default function SearchBar() {
     return /^(0x){1}[0-9a-fA-F]{40}$/i.test(address);
   }
 
+  function isEns() {
+    return tempSearch.endsWith(".eth");
+  }
+
   function isSearchInvalid() {
-    return !isEthereumAdressValid(tempSearch) && !tempSearch.endsWith(".eth");
+    return !isEthereumAdressValid(tempSearch) && !isEns;
   }
 
   function invalid() {
@@ -27,6 +34,12 @@ export default function SearchBar() {
       return (
         <div className="invalid">
           Ethereum address or ENS provided is invalid.
+        </div>
+      );
+    } else if (showConnectMessage) {
+      return (
+        <div className="invalid">
+          You must connect your wallet first if you want to search an ENS.
         </div>
       );
     } else {
@@ -39,9 +52,15 @@ export default function SearchBar() {
       setInvalidStatus(true);
       return;
     }
-    setInvalidStatus(false);
-    setSearchHandled(false);
-    setSearch(tempSearch);
+    debugger;
+    if (!isWeb3Enabled && isEns()) {
+      setShowConnectMessage(true);
+    } else {
+      setShowConnectMessage(false);
+      setInvalidStatus(false);
+      setSearchHandled(false);
+      setSearch(tempSearch);
+    }
   }
 
   return (

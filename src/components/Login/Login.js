@@ -1,49 +1,44 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import { SearchContext } from "../../hooks/SearchProvider";
 import "./Login.css";
 
 export default function Login() {
-  const {
-    authenticate,
-    enableWeb3,
-    isWeb3Enabled,
-    isAuthenticated,
-    user,
-    logout,
-  } = useMoralis();
+  const { enableWeb3, isWeb3Enabled, web3 } = useMoralis();
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
-    if (!isWeb3Enabled) {
-      enableWeb3();
+    const getAddress = async () => {
+      setAddress(await web3.getSigner().getAddress());
+    };
+    if (isWeb3Enabled && address === "") {
+      getAddress();
     }
-  }, [isWeb3Enabled, enableWeb3]);
+  }, [web3, isWeb3Enabled, address]);
+
   const { setSearch } = useContext(SearchContext);
-  if (!isAuthenticated) {
+
+  if (!isWeb3Enabled) {
     return (
       <div>
         <div
           className="login login-btn green-text"
-          onClick={() => authenticate()}
+          onClick={() => enableWeb3()}
         >
-          authenticate...
+          connect...
         </div>
       </div>
     );
   } else {
-    const ethAddress = user.get("ethAddress");
-
     return (
       <div className="login connected">
         <div className="address">
-          {ethAddress.slice(0, 6)}...
-          {ethAddress.slice(ethAddress.length - 4, ethAddress.length)}
+          {address.slice(0, 6)}...
+          {address.slice(address.length - 4, address.length)}
         </div>
+
         <div className="actions green-text">
-          <div className="action" onClick={() => logout()}>
-            logout
-          </div>
-          <div className="action" onClick={() => setSearch(ethAddress)}>
+          <div className="action" onClick={() => setSearch(address)}>
             my appartments
           </div>
         </div>

@@ -27,7 +27,7 @@ export default function Results() {
   /**
    * Moralis calls
    */
-  const { web3, enableWeb3, isWeb3Enabled } = useMoralis();
+  const { web3, isWeb3Enabled } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
   const { fetch, data, error, isLoading, isFetching } = useMoralisWeb3ApiCall(
     Web3Api.account.getNFTsForContract,
@@ -55,7 +55,7 @@ export default function Results() {
   }, [addressState, fetch, setSearchHandled]);
 
   useEffect(() => {
-    if (ensDomain) {
+    if (ensDomain && web3) {
       web3.resolveName(ensDomain).then(function (address) {
         setAddressState({ address: address });
       });
@@ -74,7 +74,7 @@ export default function Results() {
     return () => {
       setResults([]);
     };
-  }, [search]);
+  }, [search, isWeb3Enabled]);
 
   useEffect(() => {
     if (!(isLoading || isFetching) && data) {
@@ -82,11 +82,11 @@ export default function Results() {
     }
   }, [isLoading, isFetching, data]);
 
-  useEffect(() => {
-    if (!isWeb3Enabled) {
-      enableWeb3();
-    }
-  }, [isWeb3Enabled, enableWeb3]);
+  // useEffect(() => {
+  //   if (!isWeb3Enabled) {
+  //     enableWeb3();
+  //   }
+  // }, [isWeb3Enabled, enableWeb3]);
 
   /**
    * Hooks calls
