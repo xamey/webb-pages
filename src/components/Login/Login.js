@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
+import { LoadingContext } from "../../hooks/LoadingProvider";
 import { SearchContext } from "../../hooks/SearchProvider";
 import "./Login.css";
 
 export default function Login() {
   const { enableWeb3, isWeb3Enabled, web3 } = useMoralis();
   const [address, setAddress] = useState("");
+  const { setGlobalLoading } = useContext(LoadingContext);
 
   useEffect(() => {
     const getAddress = async () => {
@@ -17,6 +19,11 @@ export default function Login() {
   }, [web3, isWeb3Enabled, address]);
 
   const { setSearch } = useContext(SearchContext);
+
+  const launchSearch = () => {
+    setGlobalLoading(true);
+    setSearch(address);
+  };
 
   if (!isWeb3Enabled) {
     return (
@@ -38,7 +45,7 @@ export default function Login() {
         </div>
 
         <div className="actions green-text">
-          <div className="action" onClick={() => setSearch(address)}>
+          <div className="action" onClick={() => launchSearch()}>
             my appartments
           </div>
         </div>

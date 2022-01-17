@@ -27,13 +27,17 @@ export default function SearchBar() {
     return !isEthereumAdressValid(tempSearch) && !isEns;
   }
 
+  function searchEqualsTempSearch() {
+    return tempSearch === search;
+  }
+
   function invalid() {
     if (isInvalid) {
-      return (
-        <div className="invalid">
-          Ethereum address or ENS provided is invalid.
-        </div>
-      );
+      let msg = "";
+      if (isSearchInvalid())
+        msg = "Ethereum address or ENS provided is invalid.";
+      if (searchEqualsTempSearch()) msg = "You already searched that.";
+      return <div className="invalid">{msg}</div>;
     } else {
       return;
     }
@@ -41,7 +45,7 @@ export default function SearchBar() {
 
   async function launchSearch() {
     if (globalLoading) return;
-    if (isSearchInvalid()) {
+    if (isSearchInvalid() || searchEqualsTempSearch()) {
       setInvalidStatus(true);
       return;
     }

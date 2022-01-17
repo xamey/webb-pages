@@ -11,7 +11,7 @@ import Result from "../Result/Result";
 import "./Results.css";
 
 export default function Results() {
-  const namehash = require('eth-ens-namehash')
+  const namehash = require("eth-ens-namehash");
 
   const ensRegistryAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   const ensRegistryAbi = require("../../contracts/registry-abi.json");
@@ -21,7 +21,7 @@ export default function Results() {
    * Local state
    */
   const [results, setResults] = useState([]);
-  const [ensDomain, setEnsDomain] = useState("");
+  const [ensDomain, setEnsDomain] = useState(null);
   const [addressObject, setAddressObject] = useState("");
   const [hashedDomain, setHashedDomain] = useState("");
   const [resolverAddress, setResolverAddress] = useState("");
@@ -49,7 +49,7 @@ export default function Results() {
     runContractFunction: runContractFunctionMain,
     data: dataMain,
     error: errorMain,
-    isFetching: isFetchingMain
+    isFetching: isFetchingMain,
   } = useApiContract({
     functionName: "resolver",
     abi: ensRegistryAbi,
@@ -61,6 +61,7 @@ export default function Results() {
     runContractFunction: runContractFunctionResolver,
     data: dataResolver,
     error: errorResolver,
+    isFetching: isFetchingResolver
   } = useApiContract({
     functionName: "addr",
     abi: ensResolverAbi,
@@ -68,19 +69,21 @@ export default function Results() {
     params: { coinType: 60, node: hashedDomain },
   });
 
-  const clearEnsInputs = () => {
+  const clear = () => {
+    setGlobalLoading(false);
     setEnsDomain("");
     setHashedDomain("");
     setResolverAddress("");
-  }
+  };
   /**
    * hooks
    */
 
   useEffect(() => {
-    if (error) {
+    if (error && globalLoading) {
       openSnackBar(error.message);
     }
+    clear();
   }, [openSnackBar, error]);
 
   useEffect(() => {
@@ -90,19 +93,20 @@ export default function Results() {
   }, [addressObject, fetch]);
 
   useEffect(() => {
-    if (errorResolver) {
-      openSnackBar(errorResolver);
+    if (errorResolver && globalLoading) {
+      openSnackBar("Error while resolving ENS. Check if it is registered.");
     }
+    clear();
   }, [errorResolver, openSnackBar]);
 
   useEffect(() => {
     if (dataResolver) {
       setAddressObject({ address: dataResolver });
     }
-  }, [dataResolver]);
+  }, [dataResolver, isFetchingResolver]);
 
   useEffect(() => {
-    if (resolverAddress) {
+    if (resolverAddress && hashedDomain) {
       runContractFunctionResolver();
     }
   }, [resolverAddress, runContractFunctionResolver, hashedDomain]);
@@ -117,9 +121,10 @@ export default function Results() {
   }, [dataMain, isFetchingMain, setResolverAddress]);
 
   useEffect(() => {
-    if (errorMain) {
-      openSnackBar(errorMain);
+    if (errorMain && globalLoading) {
+      openSnackBar(errorMain.error);
     }
+    clear();
   }, [openSnackBar, errorMain]);
 
   useEffect(() => {
@@ -130,17 +135,14 @@ export default function Results() {
 
   useEffect(() => {
     if (ensDomain) {
-      setHashedDomain(
-        namehash.hash(ensDomain)
-      );
+      setHashedDomain(namehash.hash(ensDomain.domain));
     }
   }, [ensDomain, namehash]);
 
   useEffect(() => {
     if (search) {
       if (search.endsWith(".eth")) {
-        clearEnsInputs();
-        setEnsDomain(search);
+          setEnsDomain({domain: search});
       } else {
         setEnsDomain(null);
         setAddressObject({ address: search });
@@ -154,7 +156,7 @@ export default function Results() {
   useEffect(() => {
     if (!(isLoading || isFetching) && data) {
       parseAndStoreResults(data.result);
-      setGlobalLoading(false);
+      clear();
     }
   }, [isLoading, isFetching, data, setGlobalLoading]);
 
